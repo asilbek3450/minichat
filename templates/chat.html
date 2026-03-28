@@ -1,0 +1,497 @@
+{% extends "base.html" %}
+
+{% block title %}Chat{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex align-items-center">
+                <img src="{{ current_user.avatar_url() }}" class="rounded-circle me-2" width="30" height="30">
+                <h5 class="mb-0"><i class="fas fa-users"></i> Foydalanuvchilar</h5>
+            </div>
+            <div class="card-body" style="height: 500px; overflow-y: auto;">
+                <div class="list-group" id="users-list">
+                    {% for user in users %}
+                        <a href="#" class="list-group-item list-group-item-action" onclick="selectUser({{ user.id }}, '{{ user.username }}')">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <img src="{{ user.avatar_url() }}" class="rounded-circle me-2" width="30" height="30">
+                                    {{ user.username }}
+                                </div>
+                                {% if user.status == 'online' %}
+                                    <span class="badge bg-success">Online</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Offline</span>
+                                {% endif %}
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+                
+                <hr>
+                <h5><i class="fas fa-users-cog"></i> Guruhlar</h5>
+                <div class="list-group" id="groups-list">
+                    {% for group in groups %}
+                        <a href="#" class="list-group-item list-group-item-action" onclick="selectGroup({{ group.id }}, '{{ group.name }}')">
+                            <div class="d-flex align-items-center">
+                                <img src="{{ url_for('static', filename='avatars/group.png') }}" class="rounded-circle me-2" width="30" height="30">
+                                {{ group.name }}
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+                
+                <hr>
+                <button class="btn btn-success w-100" onclick="showCreateGroup()">
+                    <i class="fas fa-plus"></i> Yangi guruh
+                </button>
+                
+                <hr>
+                <button class="btn btn-info w-100" onclick="showUpdateAvatar()">
+                    <i class="fas fa-camera"></i> Avatar o'zgartirish
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white" id="chat-header">
+                <h5 class="mb-0">Chatni boshlash uchun foydalanuvchini tanlang</h5>
+            </div>
+            <div class="card-body" id="chat-messages" style="height: 400px; overflow-y: auto;">
+                <!-- Xabarlar shu yerda ko'rsatiladi -->
+            </div>
+            <div class="card-footer">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="message-input" placeholder="Xabar yozing..." disabled>
+                    <button class="btn btn-primary" id="send-button" onclick="sendMessage()" disabled>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                <small class="text-muted" id="typing-indicator"></small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Guruh yaratish modal -->
+<div class="modal fade" id="createGroupModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Yangi guruh yaratish</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="form-control" id="group-name" placeholder="Guruh nomi">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor qilish</button>
+                <button type="button" class="btn btn-primary" onclick="createGroup()">Yaratish</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Avatar o'zgartirish modal -->
+<div class="modal fade" id="updateAvatarModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Avatar o'zgartirish</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <img id="current-avatar" src="{{ current_user.avatar_url() }}" class="rounded-circle" width="100" height="100">
+                </div>
+                <input type="file" class="form-control" id="new-avatar" accept="image/*">
+                <div class="text-center mt-3">
+                    <img id="new-avatar-preview" src="#" alt="Preview" style="max-width: 100px; max-height: 100px; display: none;" class="rounded-circle">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bekor qilish</button>
+                <button type="button" class="btn btn-primary" onclick="updateAvatar()">Saqlash</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.message {
+    margin-bottom: 15px;
+    clear: both;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.message-me {
+    float: right;
+    max-width: 70%;
+}
+
+.message-other {
+    float: left;
+    max-width: 70%;
+}
+
+.message-content {
+    padding: 10px 15px;
+    border-radius: 18px;
+    background-color: #f1f1f1;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: flex-start;
+}
+
+.message-me .message-content {
+    background-color: #007bff;
+    color: white;
+    flex-direction: row-reverse;
+}
+
+.message-other .message-content {
+    background-color: #e9ecef;
+}
+
+.message-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin: 0 10px;
+}
+
+.message-text {
+    flex: 1;
+}
+
+.message small {
+    font-size: 11px;
+    opacity: 0.7;
+    display: block;
+    margin-top: 5px;
+}
+
+.message-me small {
+    color: rgba(255,255,255,0.9) !important;
+}
+
+#chat-messages {
+    background-color: #f8f9fa;
+    padding: 20px;
+}
+
+#typing-indicator {
+    font-style: italic;
+    font-size: 12px;
+    margin-top: 5px;
+    color: #6c757d;
+    min-height: 20px;
+}
+
+.list-group-item .d-flex align-items-center img {
+    object-fit: cover;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    var socket = io();
+    var currentUserId = {{ current_user.id }};
+    var currentUsername = '{{ current_user.username }}';
+    var currentUserAvatar = '{{ current_user.avatar_url() }}';
+    var selectedUserId = null;
+    var selectedGroupId = null;
+    var typingTimeout = null;
+    
+    // Socket eventlari
+    socket.on('connect', function() {
+        console.log('Socket connected');
+        socket.emit('join');
+    });
+    
+    // Yangi xabar kelganda
+    socket.on('new_message', function(data) {
+        console.log('Yangi xabar keldi:', data);
+        
+        if (selectedUserId && !selectedGroupId) {
+            if (data.sender_id === selectedUserId) {
+                displayMessage(data);
+            }
+        }
+    });
+    
+    // Yangi guruh xabari kelganda
+    socket.on('new_group_message', function(data) {
+        console.log('Yangi guruh xabari keldi:', data);
+        
+        if (selectedGroupId && data.group_id === selectedGroupId) {
+            if (data.user_id !== currentUserId) {
+                displayGroupMessage(data);
+            }
+        }
+    });
+    
+    // Yozish holati
+    socket.on('user_typing', function(data) {
+        if (selectedUserId && data.user_id === selectedUserId) {
+            if (data.is_typing) {
+                document.getElementById('typing-indicator').innerHTML = 
+                    data.username + ' yozmoqda...';
+                
+                clearTimeout(typingTimeout);
+                typingTimeout = setTimeout(function() {
+                    document.getElementById('typing-indicator').innerHTML = '';
+                }, 3000);
+            } else {
+                document.getElementById('typing-indicator').innerHTML = '';
+            }
+        }
+    });
+    
+    // Foydalanuvchi tanlash
+    function selectUser(userId, username) {
+        selectedUserId = userId;
+        selectedGroupId = null;
+        
+        document.getElementById('chat-header').innerHTML = 
+            '<h5 class="mb-0"><i class="fas fa-user"></i> ' + username + ' bilan suhbat</h5>';
+        
+        document.getElementById('message-input').disabled = false;
+        document.getElementById('send-button').disabled = false;
+        document.getElementById('message-input').focus();
+        
+        fetch('/get_messages/' + userId)
+            .then(response => response.json())
+            .then(messages => {
+                const chatDiv = document.getElementById('chat-messages');
+                chatDiv.innerHTML = '';
+                messages.forEach(msg => {
+                    displayMessage(msg);
+                });
+                chatDiv.scrollTop = chatDiv.scrollHeight;
+            });
+    }
+    
+    // Guruh tanlash
+    function selectGroup(groupId, groupName) {
+        selectedGroupId = groupId;
+        selectedUserId = null;
+        
+        document.getElementById('chat-header').innerHTML = 
+            '<h5 class="mb-0"><i class="fas fa-users"></i> ' + groupName + ' (Guruh)</h5>';
+        
+        document.getElementById('message-input').disabled = false;
+        document.getElementById('send-button').disabled = false;
+        document.getElementById('message-input').focus();
+        
+        fetch('/get_group_messages/' + groupId)
+            .then(response => response.json())
+            .then(messages => {
+                const chatDiv = document.getElementById('chat-messages');
+                chatDiv.innerHTML = '';
+                messages.forEach(msg => {
+                    displayGroupMessage(msg);
+                });
+                chatDiv.scrollTop = chatDiv.scrollHeight;
+            });
+    }
+    
+    // Xabar yuborish
+    function sendMessage() {
+        const input = document.getElementById('message-input');
+        const content = input.value.trim();
+        
+        if (!content) return;
+        
+        const tempId = Date.now();
+        
+        if (selectedUserId) {
+            const myMessage = {
+                id: tempId,
+                content: content,
+                sender_id: currentUserId,
+                sender_name: currentUsername,
+                sender_avatar: currentUserAvatar,
+                receiver_id: selectedUserId,
+                timestamp: new Date().toLocaleString(),
+                is_read: false
+            };
+            displayMessage(myMessage);
+            
+            socket.emit('send_message', {
+                content: content,
+                receiver_id: selectedUserId
+            });
+            
+        } else if (selectedGroupId) {
+            const myMessage = {
+                id: tempId,
+                content: content,
+                user_id: currentUserId,
+                username: currentUsername,
+                user_avatar: currentUserAvatar,
+                group_id: selectedGroupId,
+                timestamp: new Date().toLocaleString()
+            };
+            displayGroupMessage(myMessage);
+            
+            socket.emit('send_group_message', {
+                content: content,
+                group_id: selectedGroupId
+            });
+        }
+        
+        input.value = '';
+        
+        setTimeout(() => {
+            const chatDiv = document.getElementById('chat-messages');
+            chatDiv.scrollTop = chatDiv.scrollHeight;
+        }, 100);
+    }
+    
+    // Xabarni ko'rsatish (shaxsiy chat)
+    function displayMessage(msg) {
+        const chatDiv = document.getElementById('chat-messages');
+        const isMe = msg.sender_id === currentUserId;
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message ' + (isMe ? 'message-me' : 'message-other');
+        messageDiv.innerHTML = `
+            <div class="message-content">
+                <img src="${msg.sender_avatar || '{{ url_for("static", filename="avatars/default.png") }}'}" class="message-avatar">
+                <div class="message-text">
+                    <strong>${isMe ? 'Men' : msg.sender_name}</strong>
+                    <p class="mb-1">${msg.content}</p>
+                    <small>${msg.timestamp}</small>
+                </div>
+            </div>
+        `;
+        
+        chatDiv.appendChild(messageDiv);
+        chatDiv.scrollTop = chatDiv.scrollHeight;
+    }
+    
+    // Xabarni ko'rsatish (guruh chat)
+    function displayGroupMessage(msg) {
+        const chatDiv = document.getElementById('chat-messages');
+        const isMe = msg.user_id === currentUserId;
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message ' + (isMe ? 'message-me' : 'message-other');
+        messageDiv.innerHTML = `
+            <div class="message-content">
+                <img src="${msg.user_avatar || '{{ url_for("static", filename="avatars/default.png") }}'}" class="message-avatar">
+                <div class="message-text">
+                    <strong>${isMe ? 'Men' : msg.username}</strong>
+                    <p class="mb-1">${msg.content}</p>
+                    <small>${msg.timestamp}</small>
+                </div>
+            </div>
+        `;
+        
+        chatDiv.appendChild(messageDiv);
+        chatDiv.scrollTop = chatDiv.scrollHeight;
+    }
+    
+    // Enter va typing eventlari
+    document.getElementById('message-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        } else if (selectedUserId) {
+            socket.emit('typing', { 
+                receiver_id: selectedUserId,
+                is_typing: true 
+            });
+            
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(function() {
+                socket.emit('typing', { 
+                    receiver_id: selectedUserId,
+                    is_typing: false 
+                });
+            }, 3000);
+        }
+    });
+    
+    // Guruh yaratish
+    function showCreateGroup() {
+        var modal = new bootstrap.Modal(document.getElementById('createGroupModal'));
+        modal.show();
+    }
+    
+    function createGroup() {
+        const groupName = document.getElementById('group-name').value;
+        
+        if (!groupName) {
+            alert('Guruh nomini kiriting');
+            return;
+        }
+        
+        fetch('/create_group', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'group_name=' + encodeURIComponent(groupName)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    }
+    
+    // Avatar o'zgartirish
+    function showUpdateAvatar() {
+        var modal = new bootstrap.Modal(document.getElementById('updateAvatarModal'));
+        modal.show();
+    }
+    
+    document.getElementById('new-avatar').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('new-avatar-preview');
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    function updateAvatar() {
+        const fileInput = document.getElementById('new-avatar');
+        const file = fileInput.files[0];
+        
+        if (!file) {
+            alert('Rasm tanlang');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('avatar', file);
+        
+        fetch('/update_avatar', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    }
+</script>
+{% endblock %}

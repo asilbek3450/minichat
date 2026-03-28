@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Ro'yxatdan o'tish{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0"><i class="fas fa-user-plus"></i> Ro'yxatdan o'tish</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Parol</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="avatar" class="form-label">Avatar (rasm)</label>
+                        <input type="file" class="form-control" id="avatar" name="avatar" accept="image/*">
+                        <small class="text-muted">Rasm yuklanmasa, default avatar ishlatiladi</small>
+                    </div>
+                    <div class="mb-3 text-center">
+                        <img id="avatar-preview" src="#" alt="Avatar preview" style="max-width: 100px; max-height: 100px; display: none;" class="rounded-circle">
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Ro'yxatdan o'tish</button>
+                </form>
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('login') }}">Tizimga kirish</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('avatar').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('avatar-preview');
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        }
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+{% endblock %}
