@@ -647,6 +647,7 @@ def serialize_private_contact(user):
     return {
         **user.to_public_dict(),
         "conversation_type": "direct",
+        "has_history": bool(last_message),
         "unread_count": unread_count,
         "last_message_preview": (
             message_preview(
@@ -673,6 +674,7 @@ def serialize_group(group):
     return {
         **group.to_sidebar_dict(),
         "conversation_type": "group",
+        "has_history": bool(last_message),
         "member_count": member_count,
         "last_message_preview": (
             message_preview(last_message.content, last_message.attachment_kind)

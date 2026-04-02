@@ -148,6 +148,7 @@
         refs.voiceButton?.addEventListener("click", toggleVoiceRecording);
 
         refs.newGroupButton?.addEventListener("click", () => {
+            cleanupModalArtifacts();
             refs.groupNameInput.value = "";
             refs.groupMembersList.querySelectorAll("input[type='checkbox']").forEach((input) => {
                 input.checked = false;
@@ -156,7 +157,10 @@
         });
 
         refs.createGroupSubmit?.addEventListener("click", createGroup);
-        refs.changeAvatarButton?.addEventListener("click", () => avatarModal?.show());
+        refs.changeAvatarButton?.addEventListener("click", () => {
+            cleanupModalArtifacts();
+            avatarModal?.show();
+        });
         refs.saveAvatarButton?.addEventListener("click", updateAvatar);
 
         refs.avatarInput?.addEventListener("change", (event) => {
@@ -187,6 +191,9 @@
                 markActiveConversationAsRead();
             }
         });
+
+        refs.groupModalEl?.addEventListener("hidden.bs.modal", cleanupModalArtifacts);
+        refs.avatarModalEl?.addEventListener("hidden.bs.modal", cleanupModalArtifacts);
     }
 
     function renderEmojiPicker() {
@@ -378,6 +385,16 @@
         }
 
         const key = conversationKey(type, id);
+        if (!state.messages.has(key) && target.has_history === false) {
+            state.messages.set(key, []);
+            renderMessages();
+            if (type === "direct") {
+                setDirectUnreadCount(id, 0);
+                renderConversationLists();
+            }
+            return;
+        }
+
         if (state.messages.has(key)) {
             renderMessages();
             if (type === "direct") {
@@ -462,7 +479,7 @@
         if (!items.length) {
             const empty = document.createElement("div");
             empty.className = "chat-thread-empty";
-            empty.textContent = "Suhbat bo'sh. Birinchi xabarni yuboring.";
+            empty.textContent = "Hozircha xabar yo'q. Suhbatni shu yerdan boshlang.";
             refs.chatMessages.appendChild(empty);
             return;
         }
@@ -1256,6 +1273,17 @@
             return window.crypto.randomUUID();
         }
         return `token-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+
+    function cleanupModalArtifacts() {
+        if (document.querySelector(".modal.show")) {
+            return;
+        }
+
+        document.body.classList.remove("modal-open");
+        document.body.style.removeProperty("overflow");
+        document.body.style.removeProperty("padding-right");
+        document.querySelectorAll(".modal-backdrop").forEach((backdrop) => backdrop.remove());
     }
 
     function sortByLastActivity(a, b) {
