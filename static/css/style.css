@@ -220,6 +220,12 @@
     background: #ffffff;
 }
 
+.seo-copy {
+    color: #425466;
+    font-size: 1.03rem;
+    line-height: 1.9;
+}
+
 @media (max-width: 767.98px) {
     .landing-hero {
         padding: 1.5rem;

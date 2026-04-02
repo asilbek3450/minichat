@@ -12,27 +12,77 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'mini-telegram-secret-key-2024')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///telegram.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SITE_URL'] = os.environ.get('SITE_URL', 'http://localhost:5000').rstrip('/')
-app.config['GOOGLE_SITE_VERIFICATION'] = os.environ.get('GOOGLE_SITE_VERIFICATION', '').strip()
+app.config['SITE_URL'] = os.environ.get('SITE_URL', 'https://uzgram.pythonanywhere.com').rstrip('/')
+app.config['GOOGLE_SITE_VERIFICATION'] = os.environ.get('GOOGLE_SITE_VERIFICATION', 'googleef6572d0f05659ed').strip()
 
 SITE_OWNER_NAME = 'Asilbek Mirolimov'
+SITE_NAME = 'Uzgram Mini Chat'
 SITE_TAGLINE = 'Python, Flask va Socket.IO asosidagi real-time chat loyihasi'
+GOOGLE_VERIFICATION_FILENAME = 'googleef6572d0f05659ed.html'
 DEFAULT_SITE_DESCRIPTION = (
-    "Asilbek Mirolimovning Mini Chat loyihasi: Flask, SQLAlchemy va Socket.IO bilan "
-    "yaratilgan tezkor xabar almashish platformasi."
+    "Uzgram Mini Chat - Asilbek Mirolimov tomonidan Flask, SQLAlchemy va Socket.IO bilan "
+    "yaratilgan zamonaviy real-time chat web ilovasi."
 )
-DEFAULT_SITE_KEYWORDS = [
+PRIMARY_SEO_KEYWORDS = [
     'Asilbek Mirolimov',
+    'Asilbek Mirolimov project',
+    'Asilbek Mirolimov flask project',
+    'Asilbek Mirolimov python project',
+    'uzgram',
+    'uzgram chat',
+    'uzgram mini chat',
     'Mini Chat',
     'mini telegram',
+    'telegram clone flask',
+    'instagram chat clone',
+    'chat app uzbekistan',
+    'uzbek chat app',
+    'online chat uzbekistan',
+    'messenger app uzbekistan',
+    'real-time chat uzbekistan',
     'Python chat app',
+    'python flask chat app',
+    'online chat python flask',
     'Flask chat',
+    'flask realtime app',
+    'flask websocket chat',
     'Socket.IO chat',
+    'socket io flask project',
     'SQLAlchemy loyiha',
     'real-time chat',
+    'real-time messaging app',
+    'web chat platform',
+    'live chat web app',
     'web dasturlash',
+    'python web development',
+    'flask web development',
     'chat platforma',
     'Python web loyiha',
+    'python anywhere flask app',
+    'uzbek developer project',
+    'uzbekiston chat sayti',
+    'online messaging platform',
+    'simple chat system flask',
+    'google searchable flask app',
+]
+HOME_KEYWORDS = PRIMARY_SEO_KEYWORDS
+LOGIN_KEYWORDS = [
+    'uzgram login',
+    'mini chat login',
+    'chat account login',
+    'flask chat sign in',
+]
+REGISTER_KEYWORDS = [
+    'uzgram register',
+    'mini chat register',
+    'chat account create',
+    'flask chat sign up',
+]
+CHAT_KEYWORDS = [
+    'uzgram chat panel',
+    'mini chat dashboard',
+    'real time chat panel',
+    'online messaging dashboard',
 ]
 NOINDEX_PATH_PREFIXES = (
     '/login',
@@ -79,11 +129,13 @@ def build_seo_context(title, description=None, keywords=None, canonical=None, ro
     return {
         'title': title,
         'description': description or DEFAULT_SITE_DESCRIPTION,
-        'keywords': keywords or DEFAULT_SITE_KEYWORDS,
+        'keywords': keywords or PRIMARY_SEO_KEYWORDS,
         'canonical': canonical or build_absolute_url('index'),
         'robots': robots,
         'og_type': 'website',
         'image': build_absolute_url('static', filename='seo/og-image.svg'),
+        'image_alt': 'Uzgram Mini Chat preview image',
+        'site_name': SITE_NAME,
     }
 
 db = SQLAlchemy(app)
@@ -197,10 +249,12 @@ def load_user(user_id):
 def inject_site_defaults():
     return {
         'site_owner_name': SITE_OWNER_NAME,
+        'site_name': SITE_NAME,
         'site_tagline': SITE_TAGLINE,
         'google_site_verification': app.config['GOOGLE_SITE_VERIFICATION'],
+        'homepage_keywords': HOME_KEYWORDS,
         'default_seo': build_seo_context(
-            title=f'{SITE_OWNER_NAME} | Mini Chat va Flask chat loyihasi'
+            title=f'{SITE_NAME} | {SITE_OWNER_NAME} Flask chat loyihasi'
         ),
     }
 
@@ -230,28 +284,53 @@ with app.app_context():
 # Routes
 @app.route('/')
 def index():
-    seo = build_seo_context(
-        title='Asilbek Mirolimov | Mini Chat, Flask Chat App va Python Web Loyiha',
-        description=(
-            "Asilbek Mirolimovning Mini Chat loyihasi. Ushbu sayt Flask, SQLAlchemy va "
-            "Socket.IO yordamida yaratilgan real-time chat platformasi bo'lib, Google qidiruvi "
-            "uchun Asilbek Mirolimov, Mini Chat, Flask chat app va Python web loyiha kalit "
-            "so'zlari bilan optimallashtirilgan."
+    seo_text_paragraphs = [
+        (
+            "Uzgram Mini Chat - bu Asilbek Mirolimov tomonidan ishlab chiqilgan modern chat app "
+            "Uzbekistan loyihasi bo‘lib, foydalanuvchilarga real-time xabar almashish imkonini "
+            "beradi. Loyiha Flask framework, SQLAlchemy va Socket.IO texnologiyalari yordamida "
+            "qurilgan. Agar kimdir Google orqali chat app uzbekistan, online chat python flask, "
+            "uzgram chat yoki flask realtime app kabi iboralarni qidira olsa, ushbu sahifa aynan "
+            "shu ehtiyojga mos javob berishi kerak. Saytning maqsadi oddiy messenjer interfeysi "
+            "orqali tez, yengil va qulay yozishma tajribasini taqdim etishdan iborat."
         ),
-        keywords=[
-            'Asilbek Mirolimov',
-            'Asilbek Mirolimov portfolio',
-            'Asilbek Mirolimov loyiha',
-            'Mini Chat',
-            'mini telegram loyiha',
-            'Flask chat app',
-            'Python web loyiha',
-            'real-time messaging',
-            'Socket.IO loyiha',
-            'chat dasturi',
-            'web ilova',
-            'Uzbek developer project',
-        ],
+        (
+            "Uzgram Mini Chat funksional jihatdan mini telegram va instagram chat clone g‘oyasiga "
+            "yaqinlashadi, lekin u o‘quv, portfolio va amaliy web development loyiha sifatida "
+            "yaratilgan. Foydalanuvchilar ro‘yxatdan o‘tishi, avatar yuklashi, boshqa "
+            "foydalanuvchilarga yozishi va guruh suhbatlarida qatnashishi mumkin. Flask chat app "
+            "sifatida bu loyiha backend arxitekturasi, real-time messaging app logikasi va "
+            "Socket.IO bilan ishlashni ko‘rsatadi. Shu sabab u nafaqat foydalanuvchilar uchun, "
+            "balki python web development yoki flask websocket chat mavzusini qidirayotgan "
+            "odamlar uchun ham qimmatli sahifa hisoblanadi."
+        ),
+        (
+            "SEO nuqtai nazaridan Uzgram sahifasi title, meta description, meta keywords, Open "
+            "Graph, Twitter Card, structured data, sitemap.xml va robots.txt bilan boyitilgan. "
+            "Bu esa Google qidiruv tizimiga sahifa mazmunini aniq tushunishga yordam beradi. "
+            "Asilbek Mirolimov project, uzbek developer project, python flask chat app va google "
+            "searchable flask app kabi keywordlar sahifa matni ichida tabiiy tarzda ishlatilgani "
+            "uchun indekslanish ehtimoli yaxshilanadi. Ayniqsa homepage ichidagi mazmunli SEO "
+            "text Google snippet sifatini oshirishga xizmat qiladi."
+        ),
+        (
+            "Agar siz online messaging platform, live chat web app yoki simple chat system flask "
+            "asosida qurilgan loyiha qidirayotgan bo‘lsangiz, Uzgram Mini Chat sizga kerakli "
+            "misollardan biri bo‘lishi mumkin. Bu loyiha Asilbek Mirolimovning Python va Flask "
+            "yo‘nalishidagi ishlanmalarini ko‘rsatadi, shu bilan birga Uzbekistan foydalanuvchilari "
+            "uchun sodda va tushunarli chat sayti konsepsiyasini namoyish etadi. Domen "
+            "uzgram.pythonanywhere.com bo‘lgani sabab Uzgram brandi ham qidiruv natijalarida "
+            "mustahkam ko‘rinadi. Natijada sayt brend, texnologiya va foydalanuvchi ehtiyojini "
+            "bir sahifada birlashtiradigan professional SEO asosiga ega bo‘ladi."
+        ),
+    ]
+    seo = build_seo_context(
+        title='Uzgram Mini Chat | Asilbek Mirolimov Flask Chat App',
+        description=(
+            "Uzgram Mini Chat - Asilbek Mirolimov yaratgan Flask chat app. Real-time messaging, "
+            "Socket.IO va Python web development asosidagi chat app Uzbekistan loyihasi."
+        ),
+        keywords=HOME_KEYWORDS,
         canonical=build_absolute_url('index'),
     )
     structured_data = [
@@ -274,7 +353,7 @@ def index():
         {
             '@context': 'https://schema.org',
             '@type': 'SoftwareApplication',
-            'name': 'Mini Chat',
+            'name': SITE_NAME,
             'applicationCategory': 'CommunicationApplication',
             'operatingSystem': 'Web',
             'author': {
@@ -283,7 +362,7 @@ def index():
             },
             'description': DEFAULT_SITE_DESCRIPTION,
             'url': build_absolute_url('index'),
-            'keywords': ', '.join(DEFAULT_SITE_KEYWORDS),
+            'keywords': ', '.join(HOME_KEYWORDS),
             'offers': {
                 '@type': 'Offer',
                 'price': '0',
@@ -291,11 +370,16 @@ def index():
             },
         },
     ]
-    return render_template('index.html', seo=seo, structured_data=structured_data)
+    return render_template(
+        'index.html',
+        seo=seo,
+        structured_data=structured_data,
+        seo_text_paragraphs=seo_text_paragraphs,
+    )
 
-@app.route('/googleef6572d0f05659ed.html')
+@app.route(f'/{GOOGLE_VERIFICATION_FILENAME}')
 def google_verify():
-    return send_from_directory('static', 'googleef6572d0f05659ed.html')
+    return send_from_directory('static', GOOGLE_VERIFICATION_FILENAME)
 
 @app.route('/robots.txt')
 def robots():
@@ -322,9 +406,9 @@ def sitemap():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     seo = build_seo_context(
-        title='Ro‘yxatdan o‘tish | Mini Chat',
-        description='Mini Chat platformasida yangi hisob yaratish sahifasi.',
-        keywords=['Mini Chat register', 'ro‘yxatdan o‘tish', 'chat account yaratish'],
+        title='Ro‘yxatdan o‘tish | Uzgram Mini Chat',
+        description='Uzgram Mini Chat platformasida yangi chat account yaratish sahifasi.',
+        keywords=REGISTER_KEYWORDS,
         canonical=build_absolute_url('register'),
         robots='noindex, nofollow',
     )
@@ -370,9 +454,9 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     seo = build_seo_context(
-        title='Kirish | Mini Chat',
-        description='Mini Chat foydalanuvchilari uchun tizimga kirish sahifasi.',
-        keywords=['Mini Chat login', 'chat login', 'tizimga kirish'],
+        title='Kirish | Uzgram Mini Chat',
+        description='Uzgram Mini Chat foydalanuvchilari uchun tizimga kirish sahifasi.',
+        keywords=LOGIN_KEYWORDS,
         canonical=build_absolute_url('login'),
         robots='noindex, nofollow',
     )
@@ -408,9 +492,9 @@ def chat():
     users = User.query.filter(User.id != current_user.id).all()
     groups = Group.query.join(GroupMember).filter(GroupMember.user_id == current_user.id).all()
     seo = build_seo_context(
-        title='Chat Panel | Mini Chat',
-        description='Mini Chat foydalanuvchi paneli va real-time yozishmalar sahifasi.',
-        keywords=['Mini Chat panel', 'chat dashboard'],
+        title='Chat Panel | Uzgram Mini Chat',
+        description='Uzgram Mini Chat foydalanuvchi paneli va real-time yozishmalar sahifasi.',
+        keywords=CHAT_KEYWORDS,
         canonical=build_absolute_url('chat'),
         robots='noindex, nofollow',
     )
