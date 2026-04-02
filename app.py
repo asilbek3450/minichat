@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, flash, jsonify, Response, has_request_context
+from flask import Flask, render_template, redirect, url_for, request, flash, jsonify, Response, has_request_context, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_socketio import SocketIO, emit, join_room, leave_room
@@ -292,6 +292,10 @@ def index():
         },
     ]
     return render_template('index.html', seo=seo, structured_data=structured_data)
+
+@app.route('/googleef6572d0f05659ed.html')
+def google_verify():
+    return send_from_directory('static', 'googleef6572d0f05659ed.html')
 
 @app.route('/robots.txt')
 def robots():
