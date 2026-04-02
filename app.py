@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, flash, jsonify
+from flask import Flask, render_template, redirect, url_for, request, flash, jsonify, Response, has_request_context
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_socketio import SocketIO, emit, join_room, leave_room
@@ -6,11 +6,52 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from datetime import datetime
 import os
+from urllib.parse import urljoin
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'mini-telegram-secret-key-2024'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'mini-telegram-secret-key-2024')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///telegram.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SITE_URL'] = os.environ.get('SITE_URL', 'http://localhost:5000').rstrip('/')
+app.config['GOOGLE_SITE_VERIFICATION'] = os.environ.get('GOOGLE_SITE_VERIFICATION', '').strip()
+
+SITE_OWNER_NAME = 'Asilbek Mirolimov'
+SITE_TAGLINE = 'Python, Flask va Socket.IO asosidagi real-time chat loyihasi'
+DEFAULT_SITE_DESCRIPTION = (
+    "Asilbek Mirolimovning Mini Chat loyihasi: Flask, SQLAlchemy va Socket.IO bilan "
+    "yaratilgan tezkor xabar almashish platformasi."
+)
+DEFAULT_SITE_KEYWORDS = [
+    'Asilbek Mirolimov',
+    'Mini Chat',
+    'mini telegram',
+    'Python chat app',
+    'Flask chat',
+    'Socket.IO chat',
+    'SQLAlchemy loyiha',
+    'real-time chat',
+    'web dasturlash',
+    'chat platforma',
+    'Python web loyiha',
+]
+NOINDEX_PATH_PREFIXES = (
+    '/login',
+    '/register',
+    '/chat',
+    '/logout',
+    '/get_messages',
+    '/get_group_messages',
+    '/create_group',
+    '/update_avatar',
+)
+PRIVATE_PATH_PREFIXES = (
+    '/chat',
+    '/logout',
+    '/get_messages',
+    '/get_group_messages',
+    '/create_group',
+    '/update_avatar',
+)
 
 # Avatar yuklash uchun sozlamalar
 app.config['UPLOADED_AVATARS_DEST'] = 'static/avatars'
@@ -21,6 +62,29 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def get_site_base_url():
+    configured_url = app.config['SITE_URL']
+    if configured_url and configured_url != 'http://localhost:5000':
+        return configured_url
+    if has_request_context():
+        return request.url_root.rstrip('/')
+    return configured_url
+
+def build_absolute_url(endpoint, **values):
+    relative_url = url_for(endpoint, _external=False, **values)
+    return urljoin(f"{get_site_base_url()}/", relative_url.lstrip('/'))
+
+def build_seo_context(title, description=None, keywords=None, canonical=None, robots='index, follow'):
+    return {
+        'title': title,
+        'description': description or DEFAULT_SITE_DESCRIPTION,
+        'keywords': keywords or DEFAULT_SITE_KEYWORDS,
+        'canonical': canonical or build_absolute_url('index'),
+        'robots': robots,
+        'og_type': 'website',
+        'image': build_absolute_url('static', filename='seo/og-image.svg'),
+    }
 
 db = SQLAlchemy(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -129,6 +193,23 @@ class GroupMessage(db.Model):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+@app.context_processor
+def inject_site_defaults():
+    return {
+        'site_owner_name': SITE_OWNER_NAME,
+        'site_tagline': SITE_TAGLINE,
+        'google_site_verification': app.config['GOOGLE_SITE_VERIFICATION'],
+        'default_seo': build_seo_context(
+            title=f'{SITE_OWNER_NAME} | Mini Chat va Flask chat loyihasi'
+        ),
+    }
+
+@app.after_request
+def add_search_headers(response):
+    if request.path.startswith(NOINDEX_PATH_PREFIXES):
+        response.headers['X-Robots-Tag'] = 'noindex, nofollow, noarchive'
+    return response
+
 # Ma'lumotlar bazasini yaratish
 with app.app_context():
     db.create_all()
@@ -149,10 +230,100 @@ with app.app_context():
 # Routes
 @app.route('/')
 def index():
-    return render_template('index.html')
+    seo = build_seo_context(
+        title='Asilbek Mirolimov | Mini Chat, Flask Chat App va Python Web Loyiha',
+        description=(
+            "Asilbek Mirolimovning Mini Chat loyihasi. Ushbu sayt Flask, SQLAlchemy va "
+            "Socket.IO yordamida yaratilgan real-time chat platformasi bo'lib, Google qidiruvi "
+            "uchun Asilbek Mirolimov, Mini Chat, Flask chat app va Python web loyiha kalit "
+            "so'zlari bilan optimallashtirilgan."
+        ),
+        keywords=[
+            'Asilbek Mirolimov',
+            'Asilbek Mirolimov portfolio',
+            'Asilbek Mirolimov loyiha',
+            'Mini Chat',
+            'mini telegram loyiha',
+            'Flask chat app',
+            'Python web loyiha',
+            'real-time messaging',
+            'Socket.IO loyiha',
+            'chat dasturi',
+            'web ilova',
+            'Uzbek developer project',
+        ],
+        canonical=build_absolute_url('index'),
+    )
+    structured_data = [
+        {
+            '@context': 'https://schema.org',
+            '@type': 'Person',
+            'name': SITE_OWNER_NAME,
+            'url': build_absolute_url('index'),
+            'description': DEFAULT_SITE_DESCRIPTION,
+            'knowsAbout': [
+                'Python',
+                'Flask',
+                'Socket.IO',
+                'SQLAlchemy',
+                'Web Development',
+                'Real-time Chat Applications',
+            ],
+            'mainEntityOfPage': build_absolute_url('index'),
+        },
+        {
+            '@context': 'https://schema.org',
+            '@type': 'SoftwareApplication',
+            'name': 'Mini Chat',
+            'applicationCategory': 'CommunicationApplication',
+            'operatingSystem': 'Web',
+            'author': {
+                '@type': 'Person',
+                'name': SITE_OWNER_NAME,
+            },
+            'description': DEFAULT_SITE_DESCRIPTION,
+            'url': build_absolute_url('index'),
+            'keywords': ', '.join(DEFAULT_SITE_KEYWORDS),
+            'offers': {
+                '@type': 'Offer',
+                'price': '0',
+                'priceCurrency': 'USD',
+            },
+        },
+    ]
+    return render_template('index.html', seo=seo, structured_data=structured_data)
+
+@app.route('/robots.txt')
+def robots():
+    lines = [
+        'User-agent: *',
+        'Allow: /',
+    ]
+    lines.extend(f'Disallow: {path}' for path in PRIVATE_PATH_PREFIXES)
+    lines.append(f'Sitemap: {build_absolute_url("sitemap")}')
+    return Response('\n'.join(lines), mimetype='text/plain')
+
+@app.route('/sitemap.xml')
+def sitemap():
+    pages = [
+        {
+            'loc': build_absolute_url('index'),
+            'lastmod': datetime.utcnow().date().isoformat(),
+            'changefreq': 'weekly',
+            'priority': '1.0',
+        },
+    ]
+    return Response(render_template('sitemap.xml', pages=pages), mimetype='application/xml')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    seo = build_seo_context(
+        title='Ro‘yxatdan o‘tish | Mini Chat',
+        description='Mini Chat platformasida yangi hisob yaratish sahifasi.',
+        keywords=['Mini Chat register', 'ro‘yxatdan o‘tish', 'chat account yaratish'],
+        canonical=build_absolute_url('register'),
+        robots='noindex, nofollow',
+    )
     if request.method == 'POST':
         username = request.form.get('username')
         email = request.form.get('email')
@@ -190,10 +361,17 @@ def register():
         flash('Muvaffaqiyatli ro\'yxatdan o\'tdingiz!')
         return redirect(url_for('login'))
     
-    return render_template('register.html')
+    return render_template('register.html', seo=seo)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    seo = build_seo_context(
+        title='Kirish | Mini Chat',
+        description='Mini Chat foydalanuvchilari uchun tizimga kirish sahifasi.',
+        keywords=['Mini Chat login', 'chat login', 'tizimga kirish'],
+        canonical=build_absolute_url('login'),
+        robots='noindex, nofollow',
+    )
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -209,7 +387,7 @@ def login():
         
         flash('Username yoki parol noto\'g\'ri')
     
-    return render_template('login.html')
+    return render_template('login.html', seo=seo)
 
 @app.route('/logout')
 @login_required
@@ -225,7 +403,14 @@ def logout():
 def chat():
     users = User.query.filter(User.id != current_user.id).all()
     groups = Group.query.join(GroupMember).filter(GroupMember.user_id == current_user.id).all()
-    return render_template('chat.html', users=users, groups=groups)
+    seo = build_seo_context(
+        title='Chat Panel | Mini Chat',
+        description='Mini Chat foydalanuvchi paneli va real-time yozishmalar sahifasi.',
+        keywords=['Mini Chat panel', 'chat dashboard'],
+        canonical=build_absolute_url('chat'),
+        robots='noindex, nofollow',
+    )
+    return render_template('chat.html', users=users, groups=groups, seo=seo)
 
 @app.route('/get_messages/<int:user_id>')
 @login_required

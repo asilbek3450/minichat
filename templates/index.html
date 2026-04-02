@@ -1,59 +1,130 @@
 {% extends "base.html" %}
 
-{% block title %}Bosh sahifa{% endblock %}
+{% block title %}{{ seo.title }}{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center mt-5">
-    <div class="col-md-8 text-center">
-        <h1 class="display-4 mb-4">Mini Telegramga xush kelibsiz!</h1>
-        <p class="lead mb-4">Oddiy va tezkor xabar almashish tizimi</p>
-        
-        {% if not current_user.is_authenticated %}
-            <div class="mt-4">
-                <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg me-2">
-                    <i class="fas fa-sign-in-alt"></i> Kirish
-                </a>
-                <a href="{{ url_for('register') }}" class="btn btn-success btn-lg">
-                    <i class="fas fa-user-plus"></i> Ro'yxatdan o'tish
-                </a>
-            </div>
-        {% else %}
-            <div class="mt-4">
-                <a href="{{ url_for('chat') }}" class="btn btn-primary btn-lg">
-                    <i class="fas fa-comments"></i> Chatga o'tish
-                </a>
-            </div>
-        {% endif %}
-    </div>
-</div>
+<section class="landing-hero mt-4 mt-lg-5">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+            <span class="landing-badge">Asilbek Mirolimov • Mini Chat • Flask SEO</span>
+            <h1 class="landing-title mt-3">Asilbek Mirolimov yaratgan Mini Chat loyihasi</h1>
+            <p class="landing-lead">
+                Ushbu sahifa Asilbek Mirolimov nomi bilan Google qidiruvida yaxshiroq chiqishi uchun
+                tayyorlandi. Loyiha Python, Flask, SQLAlchemy va Socket.IO asosidagi real-time chat
+                platformasi bo‘lib, mini telegram, Flask chat app, Python web loyiha va chat dasturi
+                kabi qidiruv iboralariga mos ravishda optimallashtirildi.
+            </p>
 
-<div class="row mt-5">
+            <div class="d-flex flex-wrap gap-3 mt-4">
+                {% if not current_user.is_authenticated %}
+                    <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-sign-in-alt"></i> Kirish
+                    </a>
+                    <a href="{{ url_for('register') }}" class="btn btn-success btn-lg">
+                        <i class="fas fa-user-plus"></i> Ro'yxatdan o'tish
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('chat') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-comments"></i> Chatga o'tish
+                    </a>
+                {% endif %}
+            </div>
+
+            <div class="keyword-cloud mt-4">
+                <span class="keyword-pill">Asilbek Mirolimov</span>
+                <span class="keyword-pill">Mini Chat</span>
+                <span class="keyword-pill">Flask Chat App</span>
+                <span class="keyword-pill">Python Web Loyiha</span>
+                <span class="keyword-pill">Real-time Messaging</span>
+                <span class="keyword-pill">Socket.IO</span>
+                <span class="keyword-pill">SQLAlchemy</span>
+                <span class="keyword-pill">Mini Telegram</span>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="identity-card">
+                <p class="identity-label">Shaxsiy brend va loyiha sahifasi</p>
+                <h2>{{ site_owner_name }}</h2>
+                <p class="mb-3">
+                    Google uchun eng muhim sahifa aynan bosh sahifa bo‘lishi kerak. Shu sabab bu yerda
+                    ism, loyiha nomi, texnologiyalar va foydali matn bitta joyga jamlandi.
+                </p>
+                <ul class="identity-points">
+                    <li>Kalit so‘zlar tabiiy matn ichida ishlatildi</li>
+                    <li>Structured data orqali ism va loyiha belgilandi</li>
+                    <li>Sitemap va robots fayllari qo‘shildi</li>
+                    <li>Login va chat sahifalari noindex qilindi</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="row g-4 mt-1">
     <div class="col-md-4">
-        <div class="card text-center">
+        <div class="card seo-card h-100">
             <div class="card-body">
-                <i class="fas fa-bolt fa-3x text-primary mb-3"></i>
-                <h5 class="card-title">Tezkor xabarlar</h5>
-                <p class="card-text">Real vaqt rejimida xabar almashing</p>
+                <i class="fas fa-bolt fa-2x text-primary mb-3"></i>
+                <h3 class="h5">Tezkor xabarlar</h3>
+                <p class="mb-0">
+                    Mini Chat real-time yozishmalar uchun qurilgan bo‘lib, foydalanuvchilar tezkor
+                    tarzda xabar almashishi mumkin.
+                </p>
             </div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card text-center">
+        <div class="card seo-card h-100">
             <div class="card-body">
-                <i class="fas fa-users fa-3x text-primary mb-3"></i>
-                <h5 class="card-title">Guruhlar</h5>
-                <p class="card-text">Guruhlar yarating va do'stlaringiz bilan suhbatlashing</p>
+                <i class="fas fa-code fa-2x text-primary mb-3"></i>
+                <h3 class="h5">Texnologiyalar</h3>
+                <p class="mb-0">
+                    Python, Flask, SQLAlchemy, WebSocket va Socket.IO kabi texnologiyalar loyihaning
+                    asosiy tayanchi hisoblanadi.
+                </p>
             </div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card text-center">
+        <div class="card seo-card h-100">
             <div class="card-body">
-                <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
-                <h5 class="card-title">Xavfsiz</h5>
-                <p class="card-text">Ma'lumotlaringiz xavfsiz saqlanadi</p>
+                <i class="fas fa-magnifying-glass fa-2x text-primary mb-3"></i>
+                <h3 class="h5">Google uchun tayyor</h3>
+                <p class="mb-0">
+                    Canonical URL, meta description, Open Graph, JSON-LD, sitemap va robots.txt
+                    orqali Search Console uchun texnik tayyorgarlik kuchaytirildi.
+                </p>
             </div>
         </div>
     </div>
-</div>
+</section>
+
+<section class="content-panel mt-4">
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <h2 class="h3">Google qidiruvida nima uchun qulay?</h2>
+            <p>
+                Qidiruv tizimlari sahifa mazmunini yaxshi tushunishi uchun bu landing sahifada Asilbek
+                Mirolimov nomi, Mini Chat loyiha tavsifi, ishlatilgan texnologiyalar va foydalanuvchi
+                uchun foydali bo‘lgan aniq matnlar joylashtirildi. Natijada sayt faqat “chat app” emas,
+                balki “Asilbek Mirolimov”, “Flask chat”, “mini telegram loyiha” kabi iboralar bilan ham
+                topilishi osonlashadi.
+            </p>
+        </div>
+        <div class="col-lg-5">
+            <div class="seo-checklist">
+                <h2 class="h5">SEO tayyor bloklar</h2>
+                <p class="mb-2">Search Console uchun qo‘shilgan asosiy elementlar:</p>
+                <ul class="identity-points mb-0">
+                    <li>`/sitemap.xml`</li>
+                    <li>`/robots.txt`</li>
+                    <li>Google verification meta joyi</li>
+                    <li>Person va SoftwareApplication schema</li>
+                    <li>Public sahifa uchun canonical</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

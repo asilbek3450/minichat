@@ -105,3 +105,132 @@
 #chat-messages::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+.landing-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 3rem;
+    border-radius: 28px;
+    background:
+        radial-gradient(circle at top right, rgba(13, 110, 253, 0.22), transparent 30%),
+        radial-gradient(circle at bottom left, rgba(25, 135, 84, 0.2), transparent 28%),
+        linear-gradient(135deg, #f7fbff 0%, #ffffff 52%, #eef7f1 100%);
+    border: 1px solid rgba(13, 110, 253, 0.12);
+    box-shadow: 0 22px 60px rgba(13, 46, 99, 0.08);
+}
+
+.landing-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(13, 110, 253, 0.1);
+    color: #0a58ca;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.landing-title {
+    font-size: clamp(2.4rem, 4vw, 4.2rem);
+    line-height: 1.05;
+    font-weight: 800;
+    color: #0d1b2a;
+}
+
+.landing-lead {
+    max-width: 760px;
+    margin-bottom: 0;
+    font-size: 1.08rem;
+    line-height: 1.8;
+    color: #43536a;
+}
+
+.keyword-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.keyword-pill {
+    padding: 9px 14px;
+    border-radius: 999px;
+    background: #ffffff;
+    border: 1px solid rgba(13, 110, 253, 0.12);
+    color: #294661;
+    font-size: 0.92rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+.identity-card,
+.content-panel,
+.seo-card,
+.seo-checklist {
+    border: 1px solid rgba(13, 110, 253, 0.12);
+    box-shadow: 0 16px 40px rgba(13, 46, 99, 0.07);
+}
+
+.identity-card {
+    padding: 2rem;
+    border-radius: 24px;
+    background: #0f172a;
+    color: #f8fafc;
+}
+
+.identity-card h2 {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.identity-label {
+    margin-bottom: 0.6rem;
+    color: #8ec5ff;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.identity-points {
+    padding-left: 1.1rem;
+}
+
+.identity-points li {
+    margin-bottom: 0.55rem;
+}
+
+.seo-card {
+    border-radius: 22px;
+    background: #ffffff;
+}
+
+.seo-card .card-body {
+    padding: 1.75rem;
+}
+
+.content-panel {
+    padding: 2rem;
+    border-radius: 24px;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.seo-checklist {
+    height: 100%;
+    padding: 1.5rem;
+    border-radius: 20px;
+    background: #ffffff;
+}
+
+@media (max-width: 767.98px) {
+    .landing-hero {
+        padding: 1.5rem;
+        border-radius: 20px;
+    }
+
+    .landing-title {
+        font-size: 2.2rem;
+    }
+
+    .content-panel {
+        padding: 1.4rem;
+    }
+}
