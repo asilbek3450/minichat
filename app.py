@@ -254,7 +254,7 @@ def inject_site_defaults():
         'google_site_verification': app.config['GOOGLE_SITE_VERIFICATION'],
         'homepage_keywords': HOME_KEYWORDS,
         'default_seo': build_seo_context(
-            title=f'{SITE_NAME} | {SITE_OWNER_NAME} Flask chat loyihasi'
+            title=f'{SITE_NAME} | Simple real-time chat app'
         ),
     }
 
@@ -284,51 +284,11 @@ with app.app_context():
 # Routes
 @app.route('/')
 def index():
-    seo_text_paragraphs = [
-        (
-            "Uzgram Mini Chat - bu Asilbek Mirolimov tomonidan ishlab chiqilgan modern chat app "
-            "Uzbekistan loyihasi bo‘lib, foydalanuvchilarga real-time xabar almashish imkonini "
-            "beradi. Loyiha Flask framework, SQLAlchemy va Socket.IO texnologiyalari yordamida "
-            "qurilgan. Agar kimdir Google orqali chat app uzbekistan, online chat python flask, "
-            "uzgram chat yoki flask realtime app kabi iboralarni qidira olsa, ushbu sahifa aynan "
-            "shu ehtiyojga mos javob berishi kerak. Saytning maqsadi oddiy messenjer interfeysi "
-            "orqali tez, yengil va qulay yozishma tajribasini taqdim etishdan iborat."
-        ),
-        (
-            "Uzgram Mini Chat funksional jihatdan mini telegram va instagram chat clone g‘oyasiga "
-            "yaqinlashadi, lekin u o‘quv, portfolio va amaliy web development loyiha sifatida "
-            "yaratilgan. Foydalanuvchilar ro‘yxatdan o‘tishi, avatar yuklashi, boshqa "
-            "foydalanuvchilarga yozishi va guruh suhbatlarida qatnashishi mumkin. Flask chat app "
-            "sifatida bu loyiha backend arxitekturasi, real-time messaging app logikasi va "
-            "Socket.IO bilan ishlashni ko‘rsatadi. Shu sabab u nafaqat foydalanuvchilar uchun, "
-            "balki python web development yoki flask websocket chat mavzusini qidirayotgan "
-            "odamlar uchun ham qimmatli sahifa hisoblanadi."
-        ),
-        (
-            "SEO nuqtai nazaridan Uzgram sahifasi title, meta description, meta keywords, Open "
-            "Graph, Twitter Card, structured data, sitemap.xml va robots.txt bilan boyitilgan. "
-            "Bu esa Google qidiruv tizimiga sahifa mazmunini aniq tushunishga yordam beradi. "
-            "Asilbek Mirolimov project, uzbek developer project, python flask chat app va google "
-            "searchable flask app kabi keywordlar sahifa matni ichida tabiiy tarzda ishlatilgani "
-            "uchun indekslanish ehtimoli yaxshilanadi. Ayniqsa homepage ichidagi mazmunli SEO "
-            "text Google snippet sifatini oshirishga xizmat qiladi."
-        ),
-        (
-            "Agar siz online messaging platform, live chat web app yoki simple chat system flask "
-            "asosida qurilgan loyiha qidirayotgan bo‘lsangiz, Uzgram Mini Chat sizga kerakli "
-            "misollardan biri bo‘lishi mumkin. Bu loyiha Asilbek Mirolimovning Python va Flask "
-            "yo‘nalishidagi ishlanmalarini ko‘rsatadi, shu bilan birga Uzbekistan foydalanuvchilari "
-            "uchun sodda va tushunarli chat sayti konsepsiyasini namoyish etadi. Domen "
-            "uzgram.pythonanywhere.com bo‘lgani sabab Uzgram brandi ham qidiruv natijalarida "
-            "mustahkam ko‘rinadi. Natijada sayt brend, texnologiya va foydalanuvchi ehtiyojini "
-            "bir sahifada birlashtiradigan professional SEO asosiga ega bo‘ladi."
-        ),
-    ]
     seo = build_seo_context(
-        title='Uzgram Mini Chat | Asilbek Mirolimov Flask Chat App',
+        title='Uzgram Mini Chat | Simple real-time web chat',
         description=(
-            "Uzgram Mini Chat - Asilbek Mirolimov yaratgan Flask chat app. Real-time messaging, "
-            "Socket.IO va Python web development asosidagi chat app Uzbekistan loyihasi."
+            "Uzgram Mini Chat - real-time xabarlar, guruh chatlari va sodda muloqot uchun yaratilgan "
+            "tezkor Flask web chat ilovasi."
         ),
         keywords=HOME_KEYWORDS,
         canonical=build_absolute_url('index'),
@@ -374,7 +334,6 @@ def index():
         'index.html',
         seo=seo,
         structured_data=structured_data,
-        seo_text_paragraphs=seo_text_paragraphs,
     )
 
 @app.route(f'/{GOOGLE_VERIFICATION_FILENAME}')

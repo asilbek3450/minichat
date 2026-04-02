@@ -1,9 +1,21 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="uz" data-theme="light">
 <head>
     {% set page_seo = seo if seo is defined else default_seo %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        (function () {
+            try {
+                var savedTheme = localStorage.getItem('theme');
+                var systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                var theme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-theme', theme);
+            } catch (error) {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
     {% block seo_head %}
     <title>{% block title %}{{ page_seo.title }}{% endblock %}</title>
     <meta name="description" content="{{ page_seo.description }}">
@@ -55,6 +67,12 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    <li class="nav-item d-flex align-items-center me-lg-2 mb-2 mb-lg-0">
+                        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Tun yoki kun rejimini almashtirish" aria-pressed="false">
+                            <i class="fas fa-moon"></i>
+                            <span data-theme-label>Tun rejimi</span>
+                        </button>
+                    </li>
                     {% if current_user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url_for('chat') }}">
@@ -88,23 +106,93 @@
         </div>
     </nav>
 
-    <div class="container mt-3">
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-info alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        
-        {% block content %}{% endblock %}
-    </div>
+    <main class="page-main">
+        <div class="container mt-3">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p class="site-footer-name mb-0">Asilbek Mirolimov</p>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+    <script>
+        (function () {
+            var root = document.documentElement;
+            var themeToggle = document.querySelector('[data-theme-toggle]');
+            var themeLabel = document.querySelector('[data-theme-label]');
+            var themeIcon = themeToggle ? themeToggle.querySelector('i') : null;
+
+            function renderTheme(theme) {
+                root.setAttribute('data-theme', theme);
+                if (themeToggle) {
+                    themeToggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+                }
+                if (themeLabel) {
+                    themeLabel.textContent = theme === 'dark' ? 'Kun rejimi' : 'Tun rejimi';
+                }
+                if (themeIcon) {
+                    themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+                }
+            }
+
+            if (themeToggle) {
+                renderTheme(root.getAttribute('data-theme') || 'light');
+                themeToggle.addEventListener('click', function () {
+                    var nextTheme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+                    renderTheme(nextTheme);
+                    try {
+                        localStorage.setItem('theme', nextTheme);
+                    } catch (error) {}
+                });
+            }
+
+            window.addEventListener('DOMContentLoaded', function () {
+                document.querySelectorAll('.reveal').forEach(function (element, index) {
+                    window.setTimeout(function () {
+                        element.classList.add('is-visible');
+                    }, 120 * index);
+                });
+
+                var previewCard = document.querySelector('[data-preview-card]');
+                if (!previewCard) {
+                    return;
+                }
+
+                previewCard.addEventListener('mousemove', function (event) {
+                    var rect = previewCard.getBoundingClientRect();
+                    var x = (event.clientX - rect.left) / rect.width - 0.5;
+                    var y = (event.clientY - rect.top) / rect.height - 0.5;
+                    previewCard.style.setProperty('--rotate-x', String(-y * 7) + 'deg');
+                    previewCard.style.setProperty('--rotate-y', String(x * 9) + 'deg');
+                    previewCard.style.setProperty('--glow-x', String(((event.clientX - rect.left) / rect.width) * 100) + '%');
+                    previewCard.style.setProperty('--glow-y', String(((event.clientY - rect.top) / rect.height) * 100) + '%');
+                });
+
+                previewCard.addEventListener('mouseleave', function () {
+                    previewCard.style.removeProperty('--rotate-x');
+                    previewCard.style.removeProperty('--rotate-y');
+                    previewCard.style.removeProperty('--glow-x');
+                    previewCard.style.removeProperty('--glow-y');
+                });
+            });
+        })();
+    </script>
     {% block scripts %}{% endblock %}
 </body>
 </html>

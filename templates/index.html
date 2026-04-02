@@ -3,129 +3,170 @@
 {% block title %}{{ seo.title }}{% endblock %}
 
 {% block content %}
-<section class="landing-hero mt-4 mt-lg-5">
-    <div class="row align-items-center g-4">
-        <div class="col-lg-7">
-            <span class="landing-badge">Asilbek Mirolimov • Uzgram • Flask SEO</span>
-            <h1 class="landing-title mt-3">Uzgram Mini Chat: Asilbek Mirolimov yaratgan Flask chat app</h1>
-            <p class="landing-lead">
-                Uzgram Mini Chat - bu Asilbek Mirolimov tomonidan yaratilgan real-time messaging web
-                ilovasi. Sahifa Google qidiruvi uchun chat app Uzbekistan, online chat python flask,
-                uzgram chat va Asilbek Mirolimov project kabi muhim keywordlar bilan professional
-                tarzda optimallashtirildi.
-            </p>
+<section class="home-hero mt-4 mt-lg-5">
+    <div class="hero-orb hero-orb-left"></div>
+    <div class="hero-orb hero-orb-right"></div>
 
-            <div class="d-flex flex-wrap gap-3 mt-4">
+    <div class="row align-items-center g-4 g-xl-5">
+        <div class="col-lg-6">
+            <div class="reveal">
+                <span class="hero-tag">Real-time chat app</span>
+                <h1 class="home-title">Simple, fast and clean messaging.</h1>
+                <p class="home-subtitle">
+                    Uzgram Mini Chat shaxsiy yozishmalar, guruh suhbatlari va tezkor muloqot uchun
+                    yengil, qulay va zamonaviy web ilova.
+                </p>
+            </div>
+
+            <div class="hero-actions reveal">
                 {% if not current_user.is_authenticated %}
-                    <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">
+                    <a href="{{ url_for('register') }}" class="btn hero-btn hero-btn-primary">
+                        <i class="fas fa-user-plus"></i> Boshlash
+                    </a>
+                    <a href="{{ url_for('login') }}" class="btn hero-btn hero-btn-secondary">
                         <i class="fas fa-sign-in-alt"></i> Kirish
                     </a>
-                    <a href="{{ url_for('register') }}" class="btn btn-success btn-lg">
-                        <i class="fas fa-user-plus"></i> Ro'yxatdan o'tish
-                    </a>
                 {% else %}
-                    <a href="{{ url_for('chat') }}" class="btn btn-primary btn-lg">
-                        <i class="fas fa-comments"></i> Chatga o'tish
+                    <a href="{{ url_for('chat') }}" class="btn hero-btn hero-btn-primary">
+                        <i class="fas fa-comments"></i> Chatni ochish
                     </a>
                 {% endif %}
             </div>
 
-            <div class="keyword-cloud mt-4">
-                {% for keyword in homepage_keywords[:12] %}
-                    <span class="keyword-pill">{{ keyword }}</span>
-                {% endfor %}
-            </div>
-        </div>
-
-        <div class="col-lg-5">
-            <div class="identity-card">
-                <p class="identity-label">Shaxsiy brend va loyiha sahifasi</p>
-                <h2>{{ site_owner_name }}</h2>
-                <p class="mb-3">
-                    Google uchun eng muhim sahifa aynan homepage bo‘lgani sabab bu yerda brend nomi,
-                    domen, texnologiyalar va foydali SEO text bitta joyga jamlandi.
-                </p>
-                <ul class="identity-points">
-                    <li>Kalit so‘zlar tabiiy matn ichida ishlatildi</li>
-                    <li>Structured data orqali ism va loyiha belgilandi</li>
-                    <li>Sitemap va robots fayllari qo‘shildi</li>
-                    <li>Google verification meta va HTML fayl ulandi</li>
-                    <li>Login va chat sahifalari noindex qilindi</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="row g-4 mt-1">
-    <div class="col-md-4">
-            <div class="card seo-card h-100">
-                <div class="card-body">
-                    <i class="fas fa-bolt fa-2x text-primary mb-3"></i>
-                    <h3 class="h5">Tezkor xabarlar</h3>
-                    <p class="mb-0">
-                    Uzgram Mini Chat real-time yozishmalar uchun qurilgan bo‘lib, foydalanuvchilar
-                    tezkor tarzda xabar almashishi mumkin.
-                    </p>
+            <div class="hero-points reveal">
+                <div class="hero-point">
+                    <i class="fas fa-bolt"></i>
+                    <span>Real-time xabarlar</span>
+                </div>
+                <div class="hero-point">
+                    <i class="fas fa-users"></i>
+                    <span>Guruhlar va direct chat</span>
+                </div>
+                <div class="hero-point">
+                    <i class="fas fa-circle-half-stroke"></i>
+                    <span>Tun va kun rejimi</span>
                 </div>
             </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card seo-card h-100">
-            <div class="card-body">
-                <i class="fas fa-code fa-2x text-primary mb-3"></i>
-                <h3 class="h5">Texnologiyalar</h3>
-                <p class="mb-0">
-                    Python, Flask, SQLAlchemy, WebSocket va Socket.IO kabi texnologiyalar loyihaning
-                    asosiy tayanchi hisoblanadi.
-                </p>
-            </div>
         </div>
-    </div>
-    <div class="col-md-4">
-            <div class="card seo-card h-100">
-                <div class="card-body">
-                    <i class="fas fa-magnifying-glass fa-2x text-primary mb-3"></i>
-                    <h3 class="h5">Google uchun tayyor</h3>
-                    <p class="mb-0">
-                    Canonical URL, meta description, Open Graph, JSON-LD, sitemap va robots.txt
-                    orqali Search Console uchun texnik tayyorgarlik kuchaytirildi.
-                </p>
+
+        <div class="col-lg-6">
+            <div class="chat-preview reveal" data-preview-card>
+                <div class="preview-badge preview-badge-live">
+                    <span class="live-dot"></span> Live
+                </div>
+                <div class="preview-badge preview-badge-theme">Day / Night</div>
+
+                <div class="preview-shell">
+                    <div class="preview-sidebar">
+                        <div class="preview-profile">
+                            <div class="preview-avatar preview-avatar-main">U</div>
+                            <div>
+                                <strong>Uzgram</strong>
+                                <small>Online now</small>
+                            </div>
+                        </div>
+
+                        <div class="preview-contact is-active">
+                            <div class="preview-avatar">A</div>
+                            <div>
+                                <strong>Ali</strong>
+                                <small>Typing...</small>
+                            </div>
+                        </div>
+
+                        <div class="preview-contact">
+                            <div class="preview-avatar">N</div>
+                            <div>
+                                <strong>Nodir</strong>
+                                <small>See you soon</small>
+                            </div>
+                        </div>
+
+                        <div class="preview-contact">
+                            <div class="preview-avatar">G</div>
+                            <div>
+                                <strong>Group</strong>
+                                <small>3 new messages</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="preview-chat">
+                        <div class="preview-chat-top">
+                            <div>
+                                <strong>Ali bilan chat</strong>
+                                <small>Fast, simple, connected</small>
+                            </div>
+                            <span class="preview-status">Encrypted</span>
+                        </div>
+
+                        <div class="preview-messages">
+                            <div class="preview-message preview-message-in">
+                                <span>Salom, dizayn ancha chiroyli bo‘libdi.</span>
+                            </div>
+                            <div class="preview-message preview-message-out">
+                                <span>Rahmat, tun rejimi ham tayyor.</span>
+                            </div>
+                            <div class="preview-message preview-message-in">
+                                <span>Animatsiyalar ham juda silliq ishlayapti.</span>
+                            </div>
+                            <div class="preview-typing">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+
+                        <div class="preview-input">
+                            <i class="fas fa-paperclip"></i>
+                            <span>Xabar yozing...</span>
+                            <button type="button">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-<section class="content-panel mt-4">
-    <div class="row g-4">
-        <div class="col-lg-8">
-            <h2 class="h3">Homepage uchun SEO text</h2>
-            {% for paragraph in seo_text_paragraphs %}
-                <p class="seo-copy">{{ paragraph }}</p>
-            {% endfor %}
-        </div>
-        <div class="col-lg-4">
-            <div class="seo-checklist">
-                <h2 class="h5">SEO tayyor bloklar</h2>
-                <p class="mb-2">Search Console va social preview uchun qo‘shilgan elementlar:</p>
-                <ul class="identity-points">
-                    <li>`/sitemap.xml`</li>
-                    <li>`/robots.txt`</li>
-                    <li>Google verification meta joyi</li>
-                    <li>Google verification HTML route</li>
-                    <li>Person va SoftwareApplication schema</li>
-                    <li>Public sahifa uchun canonical</li>
-                    <li>Open Graph va Twitter Card</li>
-                </ul>
-                <hr>
-                <h3 class="h6">Domen</h3>
-                <p class="mb-3">`https://uzgram.pythonanywhere.com`</p>
-                <h3 class="h6">Snippet title</h3>
-                <p class="mb-3">{{ seo.title }}</p>
-                <h3 class="h6">Snippet description</h3>
-                <p class="mb-0">{{ seo.description }}</p>
-            </div>
-        </div>
+<section class="feature-grid">
+    <article class="feature-card reveal">
+        <div class="feature-icon"><i class="fas fa-comments"></i></div>
+        <h2>Instant chat</h2>
+        <p>Xabarlar tezkor yuboriladi va suhbat oqimi silliq ko‘rinadi.</p>
+    </article>
+
+    <article class="feature-card reveal">
+        <div class="feature-icon"><i class="fas fa-layer-group"></i></div>
+        <h2>Minimal interface</h2>
+        <p>Keraksiz murakkabliksiz, toza va tushunarli foydalanuvchi tajribasi.</p>
+    </article>
+
+    <article class="feature-card reveal">
+        <div class="feature-icon"><i class="fas fa-moon"></i></div>
+        <h2>Dark / Light mode</h2>
+        <p>Bir tugma bilan tun va kun rejimi o‘rtasida almashish mumkin.</p>
+    </article>
+</section>
+
+<section class="home-cta reveal">
+    <div>
+        <span class="hero-tag">Ready to chat?</span>
+        <h2>Open the app and start a conversation.</h2>
+    </div>
+
+    <div class="hero-actions">
+        {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('register') }}" class="btn hero-btn hero-btn-primary">
+                Hisob yaratish
+            </a>
+        {% else %}
+            <a href="{{ url_for('chat') }}" class="btn hero-btn hero-btn-primary">
+                Chatga o‘tish
+            </a>
+        {% endif %}
     </div>
 </section>
 {% endblock %}
